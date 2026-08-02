@@ -1,2 +1,2 @@
-#define WIFI_SSID "eva"
-#define WIFI_PASSWORD "evashotspot"
+#define WIFI_SSID "Backup iPhone"
+#define WIFI_PASSWORD "liverpool"
