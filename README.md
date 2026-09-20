@@ -8,6 +8,8 @@ This project was developed by team Based Squad for the MUEEC x CISSA Hardwired H
   <img src="assets/mini%20arcade%20wiring.jpeg" width="300">
 </p>
 
+[Link to YouTube video demo](https://youtu.be/c13hDvMo-N8?si=nfecOns8Wn-likJz)
+
 ## Features
 
 - **Brick Breaker** and **Alien Invasion** — two arcade games, playable with the joystick
