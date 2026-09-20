@@ -1,8 +1,11 @@
 # ESP32 Mini Arcade
 
-A pocket-sized arcade cabinet built around an ESP32, made by **Based Squad** at a hackathon. The ESP32 hosts its own WiFi network and serves a web app straight from its onboard flash — mounted inside the cabinet is an iPhone running that page in Safari, which acts as the machine's actual screen. A WebSocket connection between the firmware and the page keeps the two in sync in real time: the joystick, two physical buttons, and an ultrasonic wave sensor drive the on-screen UI instantly, while the ESP32 reacts back over that same socket — flashing an 8-LED array, waving a pair of servo "arms", or shifting the RGB status LED — depending on what's happening on screen (games, a clock, a weather widget, and a restaurant picker).
+This project was developed by team Based Squad for the MUEEC x CISSA Hardwired Hackathon 2026. It is a small arcade machine built around an ESP32 that connects to the local WiFi network and serves a web app from its flash memory to a phone (or any device) connected to the same network. The ESP32 acts as the backend — connecting to WiFi, serving the app's files, and reading and writing to the hardware (inputs: joystick, two buttons, ultrasonic sensor; outputs: 8xLED array, power LED, mode RGB LED, two servo motors) — while the phone's browser acts as the frontend, rendering the UI and running all of the app logic (clock, weather, food finder, and game apps). A WebSocket connection between the two keeps them in sync in real time: physical input from the joystick and buttons is reflected on screen instantly, and in turn, events happening in the app — winning a game, choosing a food, going to sleep — trigger physical reactions on the machine itself, driving the 8xLED array, a pair of servo "arms", and the status LEDs.
 
-![Mini Arcade](assets/Mini%20Arcade.jpg)
+<p align="center">
+  <img src="assets/mini%20arcade%20pic.jpeg" width="45%">
+  <img src="assets/mini%20arcade%20wiring.jpeg" width="45%">
+</p>
 
 ## Features
 
