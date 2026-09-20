@@ -1,11 +1,11 @@
-#include <Arduino.h>
-#include <WiFi.h>
 #include "FS.h"
-#include <LittleFS.h>
-#include <ESPAsyncWebServer.h>
-#include <AsyncTCP.h>
+#include <Arduino.h>
 #include <Arduino_JSON.h>
+#include <AsyncTCP.h>
 #include <ESP32Servo.h>
+#include <ESPAsyncWebServer.h>
+#include <LittleFS.h>
+#include <WiFi.h>
 
 #include "config.h"
 
@@ -46,7 +46,8 @@
 /* Function prototypes */
 
 void updateLEDs(byte pattern);
-void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len);
+void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client,
+             AwsEventType type, void *arg, uint8_t *data, size_t len);
 void handleWebSocketMessage(void *arg, uint8_t *data, size_t len);
 void handleNavButton();
 void handleSelButton();
@@ -104,14 +105,12 @@ AsyncWebServer server(80);
 
 AsyncWebSocket ws("/ws");
 
-void setup()
-{
+void setup() {
   delay(2000);
   Serial.begin(115200);
 
   // setup filesystem
-  if (!LittleFS.begin(FORMAT_LITTLEFS_IF_FAILED))
-  {
+  if (!LittleFS.begin(FORMAT_LITTLEFS_IF_FAILED)) {
     Serial.println("LittleFS Mount Failed");
     return;
   }
@@ -121,8 +120,7 @@ void setup()
   WiFi.begin(ssid, password);
   Serial.print("Connecting");
 
-  while (WiFi.status() != WL_CONNECTED)
-  {
+  while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
@@ -166,10 +164,8 @@ void setup()
   analogWrite(BLUE_PIN, 0);
 }
 
-void loop()
-{
-  if (client_connected)
-  {
+void loop() {
+  if (client_connected) {
     // Inputs
     handleNavButton();
     handleSelButton();
@@ -181,17 +177,16 @@ void loop()
 
 /**********************************************************************/
 
-void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len)
-{
-  switch (type)
-  {
-  case WS_EVT_CONNECT:
-  {
+void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client,
+             AwsEventType type, void *arg, uint8_t *data, size_t len) {
+  switch (type) {
+  case WS_EVT_CONNECT: {
     JSONVar msg;
     msg["type"] = "reset";
     ws.textAll(JSON.stringify(msg));
     client_connected = true;
-    Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
+    Serial.printf("WebSocket client #%u connected from %s\n", client->id(),
+                  client->remoteIP().toString().c_str());
     break;
   }
   case WS_EVT_DISCONNECT:
@@ -211,29 +206,21 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
 
 /**********************************************************************/
 
-void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
-{
+void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
   AwsFrameInfo *info = (AwsFrameInfo *)arg;
-  if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT)
-  {
+  if (info->final && info->index == 0 && info->len == len &&
+      info->opcode == WS_TEXT) {
     data[len] = 0;
     String msg_str = (char *)data;
     JSONVar msg = JSON.parse(msg_str);
     String type = msg["type"];
-    if (type == "food_chosen")
-    {
+    if (type == "food_chosen") {
       celebrate();
-    }
-    else if (type == "save_food")
-    {
+    } else if (type == "save_food") {
       save_food(msg);
-    }
-    else if (type == "update_app")
-    {
+    } else if (type == "update_app") {
       update_app(msg);
-    }
-    else if (type == "sleep")
-    {
+    } else if (type == "sleep") {
       Serial.println("Going to sleep");
       isAsleep = true;
       sleepLEDs();
@@ -245,21 +232,16 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
 /**********************************************************************/
 /* Handle inputs */
 
-void handleNavButton()
-{
+void handleNavButton() {
   int nav_button_curr = digitalRead(NAV_BUTTON_PIN);
-  if (nav_button_curr != nav_button_prev)
-  {
+  if (nav_button_curr != nav_button_prev) {
     last_nav_change = millis();
   }
 
-  if ((millis() - last_nav_change) > debounceDelay)
-  {
-    if (nav_button_curr != debounced_nav_curr)
-    {
+  if ((millis() - last_nav_change) > debounceDelay) {
+    if (nav_button_curr != debounced_nav_curr) {
       debounced_nav_curr = nav_button_curr;
-      if (debounced_nav_curr == LOW)
-      {
+      if (debounced_nav_curr == LOW) {
         Serial.println("Nav button pressed - cycling app");
         JSONVar obj;
         obj["type"] = "nav";
@@ -273,21 +255,16 @@ void handleNavButton()
   nav_button_prev = nav_button_curr;
 }
 
-void handleSelButton()
-{
+void handleSelButton() {
   int sel_button_curr = digitalRead(SEL_BUTTON_PIN);
-  if (sel_button_curr != sel_button_prev)
-  {
+  if (sel_button_curr != sel_button_prev) {
     last_sel_change = millis();
   }
 
-  if ((millis() - last_sel_change) > debounceDelay)
-  {
-    if (sel_button_curr != debounced_sel_curr)
-    {
+  if ((millis() - last_sel_change) > debounceDelay) {
+    if (sel_button_curr != debounced_sel_curr) {
       debounced_sel_curr = sel_button_curr;
-      if (debounced_sel_curr == LOW)
-      {
+      if (debounced_sel_curr == LOW) {
         Serial.println("sel button pressed");
         JSONVar obj;
         obj["type"] = "sel";
@@ -298,8 +275,7 @@ void handleSelButton()
   sel_button_prev = sel_button_curr;
 }
 
-void handleJoyStick()
-{
+void handleJoyStick() {
   int xVal = analogRead(VRX_PIN);
   int yVal = analogRead(VRY_PIN);
   int delta_x = xVal - xCentre;
@@ -307,20 +283,15 @@ void handleJoyStick()
 
   String stickDirection = "none";
 
-  if (abs(delta_x) > STICK_DEADBAND || abs(delta_y) > STICK_DEADBAND)
-  {
-    if (abs(delta_x) > abs(delta_y))
-    {
+  if (abs(delta_x) > STICK_DEADBAND || abs(delta_y) > STICK_DEADBAND) {
+    if (abs(delta_x) > abs(delta_y)) {
       stickDirection = delta_x > 0 ? "ArrowLeft" : "ArrowRight";
-    }
-    else
-    {
+    } else {
       stickDirection = delta_y > 0 ? "ArrowDown" : "ArrowUp";
     }
   }
 
-  if (stickDirection != "none" && stickDirection != lastStickDirection)
-  {
+  if (stickDirection != "none" && stickDirection != lastStickDirection) {
     Serial.println("Joystick moved");
     JSONVar obj;
     obj["type"] = "stick";
@@ -330,21 +301,16 @@ void handleJoyStick()
   lastStickDirection = stickDirection;
 }
 
-void handleSwButton()
-{
+void handleSwButton() {
   int sw_curr = digitalRead(SW_PIN);
-  if (sw_curr != sw_prev)
-  {
+  if (sw_curr != sw_prev) {
     last_sw_change = millis();
   }
 
-  if ((millis() - last_sw_change) > debounceDelay)
-  {
-    if (sw_curr != debounced_sw_curr)
-    {
+  if ((millis() - last_sw_change) > debounceDelay) {
+    if (sw_curr != debounced_sw_curr) {
       debounced_sw_curr = sw_curr;
-      if (debounced_sw_curr == LOW)
-      {
+      if (debounced_sw_curr == LOW) {
         Serial.println("SW pressed - escape");
         JSONVar obj;
         obj["type"] = "sw";
@@ -355,15 +321,12 @@ void handleSwButton()
   sw_prev = sw_curr;
 }
 
-void handleUltrasonic()
-{
+void handleUltrasonic() {
   int dist_cm = find_dist_cm();
   bool isClose = (dist_cm > 0 && dist_cm < WAVE_DIST_THRESHOLD_CM);
-  if (isClose && !wasClose && (millis() - lastWaveTime > WAVE_COOLDOWN_MS))
-  {
+  if (isClose && !wasClose && (millis() - lastWaveTime > WAVE_COOLDOWN_MS)) {
     Serial.println("Hand wave detected - toggle sleep");
-    if (isAsleep)
-    {
+    if (isAsleep) {
       Serial.println("Hand wave detected - Waking up");
       wakeLEDs();
       wakeArms();
@@ -379,43 +342,35 @@ void handleUltrasonic()
 
 /**********************************************************************/
 
-void celebrate()
-{
+void celebrate() {
   // tweak out
   KnightRiderLEDs();
   celebrateArms();
 }
 
-void save_food(JSONVar msg)
-{
-}
+void save_food(JSONVar msg) {}
 
-void update_app(JSONVar msg)
-{
+void update_app(JSONVar msg) {
   String cur_app = msg["app"];
-  if (cur_app == "clock-app")
-  {
+  if (cur_app == "clock-app") {
     analogWrite(RED_PIN, 255);
     analogWrite(GREEN_PIN, 255);
     analogWrite(BLUE_PIN, 0);
   }
 
-  else if (cur_app == "weather-app")
-  {
+  else if (cur_app == "weather-app") {
     analogWrite(RED_PIN, 0);
     analogWrite(GREEN_PIN, 0);
     analogWrite(BLUE_PIN, 255);
   }
 
-  else if (cur_app == "food-finder-app")
-  {
+  else if (cur_app == "food-finder-app") {
     analogWrite(RED_PIN, 255);
     analogWrite(GREEN_PIN, 0);
     analogWrite(BLUE_PIN, 0);
   }
 
-  else if (cur_app == "game-app")
-  {
+  else if (cur_app == "game-app") {
     analogWrite(RED_PIN, 255);
     analogWrite(GREEN_PIN, 0);
     analogWrite(BLUE_PIN, 255);
@@ -425,18 +380,14 @@ void update_app(JSONVar msg)
 /**********************************************************************/
 /* LED sequences */
 
-void KnightRiderLEDs()
-{
-  for (int j = 0; j < 3; j++)
-  {
-    for (int i = 0; i < 8; i++)
-    {
+void KnightRiderLEDs() {
+  for (int j = 0; j < 3; j++) {
+    for (int i = 0; i < 8; i++) {
       byte pattern = 1 << i;
       updateLEDs(pattern);
       delay(50);
     }
-    for (int i = 6; i >= 1; i--)
-    {
+    for (int i = 6; i >= 1; i--) {
       byte pattern = 1 << i;
       updateLEDs(pattern);
       delay(50);
@@ -447,8 +398,7 @@ void KnightRiderLEDs()
   updateLEDs(0);
 }
 
-void sleepLEDs()
-{
+void sleepLEDs() {
   byte pattern = 0b11111111;
   updateLEDs(pattern);
   delay(150);
@@ -457,8 +407,7 @@ void sleepLEDs()
   // Converging inwards
   int pairs[4][2] = {{0, 7}, {1, 6}, {2, 5}, {3, 4}};
   int stepDelay = 150;
-  for (int i = 0; i < 4; i++)
-  {
+  for (int i = 0; i < 4; i++) {
     pattern &= ~(1 << pairs[i][0]);
     pattern &= ~(1 << pairs[i][1]);
     updateLEDs(pattern);
@@ -467,8 +416,7 @@ void sleepLEDs()
   }
 }
 
-void wakeLEDs()
-{
+void wakeLEDs() {
   byte pattern = 0b00000000; // all off
   updateLEDs(pattern);
   delay(300);
@@ -477,8 +425,7 @@ void wakeLEDs()
   // Diverging Outwards
   int pairs[4][2] = {{3, 4}, {2, 5}, {1, 6}, {0, 7}};
   int stepDelay = 300;
-  for (int i = 0; i < 4; i++)
-  {
+  for (int i = 0; i < 4; i++) {
     pattern |= (1 << pairs[i][0]);
     pattern |= (1 << pairs[i][1]);
     updateLEDs(pattern);
@@ -490,11 +437,9 @@ void wakeLEDs()
 /**********************************************************************/
 /* Servo sequences */
 
-void celebrateArms()
-{
+void celebrateArms() {
   // pump arms
-  for (int i = 0; i < 4; i++)
-  {
+  for (int i = 0; i < 4; i++) {
     leftArm.write(180);
     rightArm.write(0);
     delay(300);
@@ -506,12 +451,10 @@ void celebrateArms()
   rightArm.write(90);
 }
 
-void sleepArms()
-{
+void sleepArms() {
   // Slow droop
   int stepDelay = 150;
-  for (int angle = 180; angle >= 0; angle -= 30)
-  {
+  for (int angle = 180; angle >= 0; angle -= 30) {
     leftArm.write(angle);
     rightArm.write(angle);
     delay(stepDelay);
@@ -519,18 +462,15 @@ void sleepArms()
   }
 }
 
-void wakeArms()
-{
+void wakeArms() {
   // stretch up
-  for (int angle = 0; angle <= 180; angle += 20)
-  {
+  for (int angle = 0; angle <= 180; angle += 20) {
     leftArm.write(angle);
     rightArm.write(angle);
     delay(150);
   }
   // bounce at the top
-  for (int i = 0; i < 2; i++)
-  {
+  for (int i = 0; i < 2; i++) {
     leftArm.write(160);
     rightArm.write(160);
     delay(100);
@@ -545,18 +485,15 @@ void wakeArms()
 
 /**********************************************************************/
 
-void updateLEDs(byte pattern)
-{
+void updateLEDs(byte pattern) {
   digitalWrite(LED_LATCH_PIN, LOW);
   shiftOut(LED_DATA_PIN, LED_CLOCK_PIN, LSBFIRST, pattern);
   digitalWrite(LED_LATCH_PIN, HIGH);
 }
 
-int calibrateStick(int pin)
-{
+int calibrateStick(int pin) {
   int sum = 0;
-  for (int i = 0; i < 20; i++)
-  {
+  for (int i = 0; i < 20; i++) {
     sum += analogRead(pin);
     delay(5);
   }
@@ -564,8 +501,7 @@ int calibrateStick(int pin)
   return sum / 20;
 }
 
-int find_dist_cm()
-{
+int find_dist_cm() {
   digitalWrite(TRIG_PIN, LOW); // Ensure low first
   delayMicroseconds(2);
   digitalWrite(TRIG_PIN, HIGH);
@@ -573,8 +509,7 @@ int find_dist_cm()
   digitalWrite(TRIG_PIN, LOW);
 
   int time_elapsed_us = pulseIn(ECHO_PIN, HIGH, 11662); // timeout after 2m
-  if (time_elapsed_us == 0)
-  {
+  if (time_elapsed_us == 0) {
     return -1; // out of range
   }
   int dist_cm = time_elapsed_us * SPEED_OF_SOUND_CM_US / 2;

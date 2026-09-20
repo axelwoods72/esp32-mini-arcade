@@ -1,4 +1,4 @@
 .DS_store
-/src/main/config.h
+include/config.h
 .pio/
 .vscode
