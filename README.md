@@ -1,6 +1,6 @@
 # ESP32 Mini Arcade
 
-This project was developed by team Based Squad for the MUEEC x CISSA Hardwired Hackathon 2026. It is a small arcade machine built around an ESP32 that connects to the local WiFi network and serves a web app from its flash memory to a phone (or any device) connected to the same network. The ESP32 acts as the backend — connecting to WiFi, serving the app's files, and reading and writing to the hardware (inputs: joystick, two buttons, ultrasonic sensor; outputs: 8xLED array, power LED, mode RGB LED, two servo motors) — while the phone's browser acts as the frontend, rendering the UI and running all of the app logic (clock, weather, food finder, and game apps). A WebSocket connection between the two keeps them in sync in real time: physical input from the joystick and buttons is reflected on screen instantly, and in turn, events happening in the app — winning a game, choosing a food, going to sleep — trigger physical reactions on the machine itself, driving the 8xLED array, a pair of servo "arms", and the status LEDs.
+This project was developed by team Based Squad for the MUEEC x CISSA Hardwired Hackathon 2026. It is a small arcade machine built around an ESP32 that connects to the local WiFi network and serves a web app from its flash memory to a phone (or any device) connected to the same network. The ESP32 acts as the backend — connecting to WiFi, serving the app's files, and reading and writing to the hardware (inputs: joystick, two buttons, ultrasonic sensor; outputs: 8xLED array, power LED, mode RGB LED, two servo motors) — while the phone's browser acts as the frontend, rendering the UI and running all of the app logic (clock, weather, food finder, and game apps). A WebSocket connection between the two keeps them in sync in real time: physical input from the joystick and buttons is reflected on screen instantly, and in turn, events happening in the app — winning a game, choosing a restaurant, going to sleep — trigger physical reactions on the machine itself, driving the 8xLED array, a pair of servo "arms", and the status LEDs.
 
 <p align="center">
   <img src="assets/mini%20arcade%20pic.jpeg" width="400">
@@ -12,7 +12,7 @@ This project was developed by team Based Squad for the MUEEC x CISSA Hardwired H
 
 - **Brick Breaker** and **Alien Invasion** — two arcade games, playable with the joystick
 - **Food Finder** — a quiz-driven restaurant picker (cuisine, budget, distance) that searches nearby places via the Google Places API, runs a radar-style expanding search, and lets you save and rate favourites
-- **Weather** — current conditions plus a 7-day forecast
+- **Weather** — current conditions plus a 7-day forecast using Open-Meteo API
 - **Clock** — the default idle screen
 - Physical feedback: an 8-LED array and two servo "arms" animate on events (winning, waking up, going to sleep)
 - Wave-to-wake: an ultrasonic sensor detects a hand wave to toggle the machine in and out of sleep
@@ -77,4 +77,4 @@ Built on a **Lolin32 Lite** (ESP32) dev board.
 
 ## Team — Based Squad
 
-Axel Woods · Ashley Hur · Sam Korania · Blake Hybarraclough · Eva Foo
+Axel Woods · Ashley Hur · Sam Koranias · Blake Hybarraclough · Eva Foo
