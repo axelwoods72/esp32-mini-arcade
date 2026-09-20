@@ -2,9 +2,9 @@
 
 This project was developed by team Based Squad for the MUEEC x CISSA Hardwired Hackathon 2026. It is a small arcade machine built around an ESP32 that connects to the local WiFi network and serves a web app from its flash memory to a phone (or any device) connected to the same network. The ESP32 acts as the backend — connecting to WiFi, serving the app's files, and reading and writing to the hardware (inputs: joystick, two buttons, ultrasonic sensor; outputs: 8xLED array, power LED, mode RGB LED, two servo motors) — while the phone's browser acts as the frontend, rendering the UI and running all of the app logic (clock, weather, food finder, and game apps). A WebSocket connection between the two keeps them in sync in real time: physical input from the joystick and buttons is reflected on screen instantly, and in turn, events happening in the app — winning a game, choosing a food, going to sleep — trigger physical reactions on the machine itself, driving the 8xLED array, a pair of servo "arms", and the status LEDs.
 
-![Mini Arcade](assets/mini%20arcade%20pic.jpg)
+<img src="assets/mini%20arcade%20pic.jpeg" width="400">
 
-![Mini Arcade](assets/mini%20arcade%20wiring.jpeg)
+<img src="assets/mini%20arcade%20wiring.jpeg" width="400">
 
 ## Features
 
